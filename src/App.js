@@ -32,7 +32,7 @@ const InfoIcon = (props) => ( <svg xmlns="http://www.w3.org/2000/svg" className=
 const LocationMarkerIcon = (props) => ( <svg xmlns="http://www.w3.org/2000/svg" className={props.className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg> );
 const PhotographIcon = (props) => ( <svg xmlns="http://www.w3.org/2000/svg" className={props.className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg> );
 const ArrowLeftIcon = (props) => ( <svg xmlns="http://www.w3.org/2000/svg" className={props.className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> );
-const AlertTriangleIcon = (props) => ( <svg xmlns="http://www.w3.org/2000/svg" className={props.className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg> );
+const AlertTriangleIcon = (props) => ( <svg xmlns="http://www.w3.org/2000/svg" className={props.className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg> );
 
 // --- Component Definitions ---
 
@@ -177,21 +177,38 @@ function SubmitReportForm() {
         }
     };
 
-    const callGeminiAPI = async (text) => {
+    // --- NEW "HACKATHON MODE" AI SIMULATION ---
+    const simulateGeminiAPI = async (text) => {
         setStatusMessage("Analyzing report with AI...");
-        const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-        const prompt = `Analyze the following campus report. Provide a JSON object with three keys: "urgency" (string: "Low", "Medium", or "High"), "sentiment" (string: "Positive", "Negative", "Neutral"), and "suggestedCategory" (string from this list: ${REPORT_CATEGORIES.join(', ')}). Report: "${text}"`;
-        try {
-            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
-            if (!response.ok) throw new Error(`API call failed with status: ${response.status}`);
-            const result = await response.json();
-            const jsonString = result.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
-            return JSON.parse(jsonString);
-        } catch (apiError) {
-            console.error("Gemini API Error:", apiError);
-            return { urgency: "N/A", sentiment: "N/A", suggestedCategory: "N/A" };
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+
+        const lowerCaseText = text.toLowerCase();
+        let urgency = "Low";
+        let sentiment = "Negative";
+        let suggestedCategory = "Other";
+
+        // Urgency Logic
+        if (/\b(emergency|fire|gun|weapon|threat|threatening|hurt|unsafe|danger)\b/.test(lowerCaseText)) {
+            urgency = "High";
+            suggestedCategory = "Emergency";
+        } else if (/\b(harassment|harassing|ragging|teasing|bullying|stole|theft)\b/.test(lowerCaseText)) {
+            urgency = "High"; // Promoted to High for better demo
+            if (lowerCaseText.includes("theft") || lowerCaseText.includes("stole")) {
+               suggestedCategory = "Theft";
+           } else {
+               suggestedCategory = "Harassment";
+           }
+        } else if (/\b(broken|leak|maintenance|dirty|clean)\b/.test(lowerCaseText)) {
+            urgency = "Low";
+            suggestedCategory = "Maintenance";
         }
+
+        // Sentiment Logic (simple)
+        if (/\b(good|great|thanks|helpful)\b/.test(lowerCaseText)) {
+            sentiment = "Positive";
+        }
+
+        return { urgency, sentiment, suggestedCategory };
     };
 
     const handleSubmit = async (e) => {
@@ -204,7 +221,9 @@ function SubmitReportForm() {
         setError('');
         setStatusMessage('Starting submission...');
         try {
-            const aiAnalysis = await callGeminiAPI(description);
+            // Call the simulation instead of the live API
+            const aiAnalysis = await simulateGeminiAPI(description);
+
             setStatusMessage("Saving report...");
             const reportData = { category, description, location, fileDataURI, status: 'Submitted', createdAt: Timestamp.now(), updates: [], aiAnalysis };
             const docRef = await addDoc(collection(db, "reports"), reportData);
@@ -270,6 +289,13 @@ function ReportStatusDetails({ report }) {
             default: return 'bg-slate-200 text-slate-800';
         }
     };
+    
+    const getUrgencyColor = (urgency) => {
+        if (urgency === 'High') return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300';
+        if (urgency === 'Medium') return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300';
+        if (urgency === 'Low') return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300';
+        return 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200';
+    };
 
     return (
         <div className="mt-8 bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden">
@@ -284,6 +310,21 @@ function ReportStatusDetails({ report }) {
                     </span>
                 </div>
                  <div className="mt-4 border-t border-slate-200 dark:border-slate-700 pt-4 space-y-4">
+                    {report.aiAnalysis && (
+                        <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
+                            <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">AI Analysis</h4>
+                            <div className="flex items-center space-x-4 text-xs">
+                                <div>
+                                    <span className="font-medium text-slate-500 dark:text-slate-400">Urgency: </span>
+                                    <span className={`font-bold px-2 py-0.5 rounded-full ${getUrgencyColor(report.aiAnalysis.urgency)}`}>{report.aiAnalysis.urgency || 'N/A'}</span>
+                                </div>
+                                <div>
+                                    <span className="font-medium text-slate-500 dark:text-slate-400">Sentiment: </span>
+                                    <span className="font-semibold">{report.aiAnalysis.sentiment || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     <p><strong className="font-medium text-slate-500 dark:text-slate-400">Category:</strong> {report.category}</p>
                     <p><strong className="font-medium text-slate-500 dark:text-slate-400">Submitted On:</strong> {report.createdAt.toDate().toLocaleString()}</p>
                     <p className="whitespace-pre-wrap"><strong className="font-medium text-slate-500 dark:text-slate-400">Description:</strong><br/>{report.description}</p>
@@ -594,6 +635,9 @@ function AnalyticsDashboard({ reports }) {
     const categoryCanvas = useRef(null);
     const statusCanvas = useRef(null);
 
+    const highUrgencyCount = reports.filter(r => r.aiAnalysis?.urgency === 'High').length;
+    const resolvedCount = reports.filter(r => r.status === 'Resolved').length;
+
     useEffect(() => {
         if (!window.Chart) return; 
         window.Chart.defaults.color = '#9ca3af';
@@ -613,7 +657,7 @@ function AnalyticsDashboard({ reports }) {
 
         if (categoryCanvas.current) {
             categoryChartInstance = new window.Chart(categoryCanvas.current, {
-                type: 'pie',
+                type: 'doughnut',
                 data: {
                     labels: Object.keys(categoryCounts),
                     datasets: [{
@@ -622,7 +666,7 @@ function AnalyticsDashboard({ reports }) {
                         borderColor: '#1e293b',
                     }]
                 },
-                options: { responsive: true, plugins: { legend: { position: 'top', labels: { color: '#d1d5db' } }, title: { display: true, text: 'Reports by Category', color: '#d1d5db', font: { size: 16 } } } }
+                options: { responsive: true, plugins: { legend: { position: 'top', labels: { color: '#d1d5db' } } } }
             });
         }
 
@@ -640,7 +684,7 @@ function AnalyticsDashboard({ reports }) {
                         borderRadius: 5
                     }]
                 },
-                options: { responsive: true, plugins: { legend: { display: false }, title: { display: true, text: 'Reports by Status', color: '#d1d5db', font: { size: 16 } } }, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: '#334155'} }, x: { ticks: { color: '#9ca3af' }, grid: { color: '#334155'} } } }
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: '#334155'} }, x: { ticks: { color: '#9ca3af' }, grid: { color: '#334155'} } } }
             });
         }
 
@@ -651,9 +695,25 @@ function AnalyticsDashboard({ reports }) {
     }, [reports]);
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl"><canvas ref={categoryCanvas}></canvas></div>
-            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl"><canvas ref={statusCanvas}></canvas></div>
+        <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl text-center">
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Reports</p>
+                    <p className="text-4xl font-bold text-slate-900 dark:text-white mt-1">{reports.length}</p>
+                </div>
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl text-center">
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">High-Urgency Alerts</p>
+                    <p className="text-4xl font-bold text-red-500 mt-1">{highUrgencyCount}</p>
+                </div>
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl text-center">
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Issues Resolved</p>
+                    <p className="text-4xl font-bold text-green-500 mt-1">{resolvedCount}</p>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl"><canvas ref={categoryCanvas}></canvas></div>
+                <div className="lg:col-span-3 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl"><canvas ref={statusCanvas}></canvas></div>
+            </div>
         </div>
     );
 }
