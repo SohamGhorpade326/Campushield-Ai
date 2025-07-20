@@ -2,7 +2,7 @@ CampusShield AI 🛡️
 An intelligent, anonymous reporting platform designed to enhance campus safety through technology. Built for the modern student, powered by AI for proactive administration.
 
 Live Demo: https://campushield-ai.vercel.app/
-https://campushield-ai.vercel.app/
+
 Credentials for Judging 🧑‍⚖️
 To review the administrator features, please use the following credentials to log in to the Admin Portal:
 
