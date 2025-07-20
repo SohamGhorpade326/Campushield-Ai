@@ -1,70 +1,103 @@
-# Getting Started with Create React App
+CampusShield AI 🛡️
+An intelligent, anonymous reporting platform designed to enhance campus safety through technology. Built for the modern student, powered by AI for proactive administration.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Live Demo: https://campushield-ai.vercel.app/
+https://campushield-ai.vercel.app/
+Credentials for Judging 🧑‍⚖️
+To review the administrator features, please use the following credentials to log in to the Admin Portal:
 
-## Available Scripts
+Email: sohamghorpade912@gmail.com
 
-In the project directory, you can run:
+Password: 123456
 
-### `npm start`
+A placeholder for a screenshot of your amazing app!
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+🚀 The Problem
+Students often hesitate to report critical campus issues like harassment, safety hazards, or maintenance problems. This hesitation stems from fear of reprisal, social stigma, or the belief that their concerns won't be taken seriously. The result is a gap in communication where administrators are unaware of the real problems affecting student well-being.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+✨ Our Solution: CampusShield AI
+CampusShield AI bridges this gap by providing a secure, 100% anonymous channel for students to voice their concerns. It's more than just a reporting form; it's an intelligent platform that uses an AI simulation to provide administrators with immediate, actionable insights, enabling them to build a safer and more responsive campus environment.
 
-### `npm test`
+🌟 Core Features
+Anonymous Reporting: Students can submit reports with detailed descriptions without revealing their identity. A unique, secret ID is provided for tracking.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Multimedia & Geolocation Evidence: Users can upload photographic evidence (as Base64 strings) and tag their precise location.
 
-### `npm run build`
+🤖 AI-Powered Triage (Local Simulation): Every report is instantly analyzed by a smart simulation to generate:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Urgency Score (High, Medium, Low)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Sentiment Analysis
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Suggested Category
 
-### `npm run eject`
+Transparent Status Tracking: Students can use their unique ID to check the status of their report (Submitted, In Review, Action Taken, Resolved).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Comprehensive Admin Dashboard: A secure, password-protected portal for campus authorities to view, manage, and update all submitted reports.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+📊 Analytics Dashboard: Administrators can view key metrics and gain insights from visualized data, including charts for reports by category and status.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+📍 Community Safety Heatmap: A live, interactive map for students showing generalized locations of recent non-sensitive reports, promoting community awareness.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+🚨 Emergency Alert System: Reports marked as "Emergency" with "High" AI-urgency trigger an immediate, high-priority alert on the admin dashboard for instant action.
 
-## Learn More
+🛠️ Technology Stack
+Frontend: React.js, Tailwind CSS
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Backend & Database: Google Firebase (Firestore, Authentication)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+AI: Local Keyword-Based Simulation (Hackathon Mode)
 
-### Code Splitting
+Maps: Leaflet.js
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Charts: Chart.js
 
-### Analyzing the Bundle Size
+Deployment: Vercel
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+⚙️ Setup and Deployment
+To get a local copy up and running or deploy your own version, follow these steps.
 
-### Making a Progressive Web App
+Local Setup
+Clone the repository:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+git clone https://github.com/YourUsername/campushield-ai.git
+cd campushield-ai
 
-### Advanced Configuration
+Install NPM packages:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+npm install
 
-### Deployment
+Create src/firebaseConfig.js file:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+In the src/ folder, create a new file named firebaseConfig.js.
 
-### `npm run build` fails to minify
+This file is listed in .gitignore and will not be pushed to GitHub.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Add your Firebase project configuration to this file:
+
+// src/firebaseConfig.js
+export const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  // ...and the rest of your keys
+};
+
+Run the application:
+
+npm start
+
+Vercel Deployment
+Push to GitHub: Ensure your .gitignore file contains src/firebaseConfig.js and push your code.
+
+Import Project on Vercel: Import your GitHub repository into a new Vercel project. The default Create React App settings are correct.
+
+Add Environment Variables: In the Vercel project settings, go to "Environment Variables" and add all your Firebase config keys. Crucially, they must be prefixed with REACT_APP_.
+
+REACT_APP_API_KEY = your-api-key-value
+
+REACT_APP_AUTH_DOMAIN = your-auth-domain-value
+
+(and so on for all keys)
+
+Deploy: Vercel will automatically build and deploy the project when you push new commits to your main branch.
+
