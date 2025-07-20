@@ -2,7 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, updateDoc, query, Timestamp, orderBy, where } from 'firebase/firestore';
-import { firebaseConfig } from './firebaseConfig'; // <-- IMPORT FROM THE NEW FILE
+
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_MEA
+};
 
 // --- Initialize Firebase ---
 const app = initializeApp(firebaseConfig);
