@@ -2,17 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, updateDoc, query, Timestamp, orderBy, where } from 'firebase/firestore';
-
-// --- Firebase Configuration ---
-const firebaseConfig = {
-  apiKey: "AIzaSyCboqQuWVxqyjyUkJ2UYr0x3nDXP_YnWmg",
-    authDomain: "campushield-project.firebaseapp.com",
-    projectId: "campushield-project",
-    storageBucket: "campushield-project.firebasestorage.app",
-    messagingSenderId: "1054169026831",
-    appId: "1:1054169026831:web:d5e2b063746fdc97682e7a",
-    measurementId: "G-ERHM947X3X"
-};
+import { firebaseConfig } from './firebaseConfig'; // <-- IMPORT FROM THE NEW FILE
 
 // --- Initialize Firebase ---
 const app = initializeApp(firebaseConfig);
@@ -177,22 +167,20 @@ function SubmitReportForm() {
         }
     };
 
-    // --- NEW "HACKATHON MODE" AI SIMULATION ---
     const simulateGeminiAPI = async (text) => {
         setStatusMessage("Analyzing report with AI...");
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 1500)); 
 
         const lowerCaseText = text.toLowerCase();
         let urgency = "Low";
         let sentiment = "Negative";
         let suggestedCategory = "Other";
 
-        // Urgency Logic
         if (/\b(emergency|fire|gun|weapon|threat|threatening|hurt|unsafe|danger)\b/.test(lowerCaseText)) {
             urgency = "High";
             suggestedCategory = "Emergency";
         } else if (/\b(harassment|harassing|ragging|teasing|bullying|stole|theft)\b/.test(lowerCaseText)) {
-            urgency = "High"; // Promoted to High for better demo
+            urgency = "High";
             if (lowerCaseText.includes("theft") || lowerCaseText.includes("stole")) {
                suggestedCategory = "Theft";
            } else {
@@ -203,7 +191,6 @@ function SubmitReportForm() {
             suggestedCategory = "Maintenance";
         }
 
-        // Sentiment Logic (simple)
         if (/\b(good|great|thanks|helpful)\b/.test(lowerCaseText)) {
             sentiment = "Positive";
         }
@@ -221,9 +208,7 @@ function SubmitReportForm() {
         setError('');
         setStatusMessage('Starting submission...');
         try {
-            // Call the simulation instead of the live API
             const aiAnalysis = await simulateGeminiAPI(description);
-
             setStatusMessage("Saving report...");
             const reportData = { category, description, location, fileDataURI, status: 'Submitted', createdAt: Timestamp.now(), updates: [], aiAnalysis };
             const docRef = await addDoc(collection(db, "reports"), reportData);
