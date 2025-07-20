@@ -10,7 +10,7 @@ Email: sohamghorpade912@gmail.com
 
 Password: 123456
 
-A placeholder for a screenshot of your amazing app!
+
 
 🚀 The Problem
 Students often hesitate to report critical campus issues like harassment, safety hazards, or maintenance problems. This hesitation stems from fear of reprisal, social stigma, or the belief that their concerns won't be taken seriously. The result is a gap in communication where administrators are unaware of the real problems affecting student well-being.
